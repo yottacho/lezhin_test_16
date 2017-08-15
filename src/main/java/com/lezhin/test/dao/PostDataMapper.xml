@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="postdata">
+    <resultMap
+        id="post_data"
+        type="com.lezhin.test.vo.PostDataVO">
+        <id
+            property="id"
+            column="id" />
+        <result
+            property="userId"
+            column="userid" />
+        <result
+            property="date"
+            column="date" />
+        <result
+            property="content"
+            column="content" />
+    </resultMap>
+
+    <!-- ***************************************************************** -->
+    <!-- CRUD -->
+    <select
+        id="select"
+        resultMap="post_data">
+        SELECT * FROM post_data WHERE id = #{id}
+    </select>
+
+    <insert id="insert">
+        <![CDATA[
+        INSERT INTO post_data
+        (userid, date, content)
+        VALUES
+        (#{userId}, #{date}, #{content})
+        ]]>
+        <selectKey
+            keyProperty="id"
+            resultType="Integer"
+            order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE post_data SET
+            content = #{content}
+        WHERE id = #{id}
+        ]]>
+    </update>
+
+    <delete id="delete">
+        DELETE FROM post_data WHERE id = #{id}
+    </delete>
+
+    <!-- ***************************************************************** -->
+    <!-- DAO -->
+    <!-- resultType="hashmap" => list -->
+    <select
+        id="selectTimeline"
+        resultType="hashmap">
+        <![CDATA[
+        SELECT id, name userid, showname dispname,
+               DATE_FORMAT(date, '%Y-%m-%d %H:%i:%s') date,
+               content
+          FROM post_data, user
+         WHERE post_data.userid IN (SELECT followid FROM follower WHERE follower.userid = #{userId})
+           AND post_data.userid = user.userid
+           AND id < #{start}
+         ORDER BY id DESC
+         LIMIT #{count}
+        ]]>
+    </select>
+
+</mapper>
+

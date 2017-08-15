@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="follower">
+    <resultMap
+        id="follower"
+        type="com.lezhin.test.vo.FollowerVO">
+        <id
+            property="userId"
+            column="userid" />
+        <result
+            property="followId"
+            column="followid" />
+    </resultMap>
+
+    <!-- ***************************************************************** -->
+    <!-- CRUD -->
+    <select
+        id="select"
+        resultMap="follower">
+        SELECT * FROM follower WHERE userid = #{userId} AND followid = #{followId}
+    </select>
+
+    <insert id="insert">
+        <![CDATA[
+        INSERT INTO follower
+        (userid, followid)
+        VALUES
+        (#{userId}, #{followId})
+        ]]>
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM follower WHERE userid = #{userId} AND followid = #{followId}
+    </delete>
+
+    <!-- ***************************************************************** -->
+    <!-- DAO -->
+    <!-- resultType="hashmap" => list -->
+
+    <select
+        id="selectMyFollowers"
+        resultType="hashmap">
+        <![CDATA[
+        SELECT (SELECT name FROM user WHERE user.userid=follower.followid) name
+          FROM follower
+         WHERE userid = #{userId}
+           AND userid <> followid
+         ORDER BY name
+        ]]>
+    </select>
+
+    <select
+        id="selectFollowMe"
+        resultType="hashmap">
+        <![CDATA[
+        SELECT (SELECT name FROM user WHERE user.userid=follower.userid) name
+          FROM follower
+         WHERE followid = #{userId}
+           AND userid <> followid
+         ORDER BY name
+        ]]>
+    </select>
+
+</mapper>
+

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="user">
+    <resultMap
+        id="user"
+        type="com.lezhin.test.vo.UserVO">
+        <id
+            property="userId"
+            column="userid" />
+        <result
+            property="name"
+            column="name" />
+        <result
+            property="showName"
+            column="showname" />
+        <result
+            property="apiAccessKey"
+            column="api_accesskey" />
+    </resultMap>
+
+    <!-- ***************************************************************** -->
+    <!-- CRUD -->
+    <select
+        id="select"
+        resultMap="user">
+        SELECT * FROM user WHERE userid = #{userId}
+    </select>
+
+    <insert id="insert">
+        <![CDATA[
+        INSERT INTO user
+        (name, showname, api_accesskey)
+        VALUES
+        (#{name}, #{showName}, #{apiAccessKey})
+        ]]>
+        <selectKey
+            keyProperty="userId"
+            resultType="Integer"
+            order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE user SET
+            showname = #{showName},
+            api_accesskey = #{apiAccessKey}
+        WHERE userid = #{userId}
+        ]]>
+    </update>
+
+    <delete id="delete">
+        DELETE FROM user WHERE userid = #{userId}
+    </delete>
+
+    <!-- ***************************************************************** -->
+    <!-- DAO -->
+    <!-- resultType="hashmap" => list -->
+    <select
+        id="selectByName"
+        resultMap="user">
+        SELECT * FROM user WHERE name = #{name}
+    </select>
+
+</mapper>
+
